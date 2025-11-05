@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+
+/* starfield canvas overlay */
+.canvas-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .18;
+}
+
+/* subtle aurora-style gradient */
+.bg-aurora {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 60% at 50% 50%, rgba(122,178,255,.18), rgba(0,0,0,0) 60%),
+    radial-gradient(40% 40% at 25% 50%, rgba(184,109,255,.14), rgba(0,0,0,0) 60%),
+    radial-gradient(40% 40% at 75% 50%, rgba(80,226,255,.12), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, #00053D 0%, #020824 100%);
+  filter: saturate(110%) contrast(105%);
+}
+.bg-aurora .drift {
+  position: absolute;
+  inset: -8%;
+  background: radial-gradient(50% 60% at 50% 50%, rgba(255,255,255,.06), rgba(0,0,0,0) 70%);
+  animation: gradientShift 16s ease-in-out infinite;
+}
+
+/* AI Boost Glow Effect */
+.ai-boost-glow {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-boost-glow::before {
+  content: '';
+  position: absolute;
+  width: 140vw;
+  max-width: 2200px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    transparent 35%,
+    rgba(0, 255, 255, 0.6) 42%,
+    rgba(80, 255, 200, 0.8) 45%,
+    rgba(0, 255, 255, 0.7) 48%,
+    rgba(100, 255, 220, 0.5) 52%,
+    rgba(0, 255, 255, 0.3) 58%,
+    transparent 65%
+  );
+  animation: aiBoostGlow 4s ease-in-out infinite;
+  filter: blur(40px);
+}
+
+.ai-boost-glow::after {
+  content: '';
+  position: absolute;
+  width: 150vw;
+  max-width: 2400px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    rgba(0, 255, 255, 0.3) 48%,
+    rgba(80, 255, 200, 0.4) 50%,
+    rgba(0, 255, 255, 0.2) 55%,
+    transparent 65%
+  );
+  animation: aiBoostGlowOuter 5s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+@keyframes aiBoostGlow {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.95) rotate(0deg);
+    filter: blur(40px) hue-rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.02) rotate(90deg);
+    filter: blur(35px) hue-rotate(20deg);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.98) rotate(180deg);
+    filter: blur(45px) hue-rotate(40deg);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.05) rotate(270deg);
+    filter: blur(30px) hue-rotate(60deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(0.95) rotate(360deg);
+    filter: blur(40px) hue-rotate(80deg);
+  }
+}
+
+@keyframes aiBoostGlowOuter {
+  0% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+    filter: blur(60px) hue-rotate(0deg);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.08) rotate(-120deg);
+    filter: blur(50px) hue-rotate(30deg);
+  }
+  66% {
+    opacity: 0.5;
+    transform: scale(0.95) rotate(-240deg);
+    filter: blur(70px) hue-rotate(60deg);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(-360deg);
+    filter: blur(60px) hue-rotate(90deg);
+  }
+}
