@@ -1,11 +1,3 @@
-# Zoom Product Wheel — Quick Start
-
-## 🚀 Setup
-
-```bash
-npm i
-npm run dev
-```
 
 ## 📝 How It Works
 
