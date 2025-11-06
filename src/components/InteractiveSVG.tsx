@@ -21,31 +21,29 @@ export default function InteractiveSVG({ onSelect }: InteractiveSVGProps) {
   useEffect(() => {
     if (!svgRef.current || !svgContent) return;
 
-    // Find all groups with IDs starting with "hotspot-"
     const hotspotGroups = svgRef.current.querySelectorAll('[id^="hotspot-"]');
+    const cleanups: Array<() => void> = [];
 
     hotspotGroups.forEach((group) => {
       const id = group.getAttribute('id');
       if (!id) return;
 
-      // Extract key from id (e.g., "hotspot-meetings" -> "meetings")
       const key = id.replace('hotspot-', '') as ItemKey;
-
-      // Make the group interactive with padding
       const svgGroup = group as SVGGElement;
+
+      const previousCursor = svgGroup.style.cursor;
+      const previousTransition = svgGroup.style.transition;
+      const previousTransformOrigin = svgGroup.style.transformOrigin;
+
       svgGroup.style.cursor = 'pointer';
       svgGroup.style.transition = 'opacity 0.15s ease-out, filter 0.15s ease-out, transform 0.15s ease-out';
-      
-      // Add invisible padding by setting a larger pointer area
+
       const bbox = svgGroup.getBBox();
-      const padding = 10; // pixels of padding
-      
-      // Set transform origin to center for smooth scaling
+      const padding = 10;
       const centerX = bbox.x + bbox.width / 2;
       const centerY = bbox.y + bbox.height / 2;
       svgGroup.style.transformOrigin = `${centerX}px ${centerY}px`;
-      
-      // Create an invisible rect for better hit detection (covers content + padding)
+
       const paddingRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       paddingRect.setAttribute('x', String(bbox.x - padding));
       paddingRect.setAttribute('y', String(bbox.y - padding));
@@ -54,14 +52,15 @@ export default function InteractiveSVG({ onSelect }: InteractiveSVGProps) {
       paddingRect.setAttribute('fill', 'transparent');
       paddingRect.setAttribute('pointer-events', 'all');
       paddingRect.style.cursor = 'pointer';
-      
-      // Insert padding rect as first child so it's behind everything but captures all events
+
       svgGroup.insertBefore(paddingRect, svgGroup.firstChild);
-      
-      // Make all OTHER children (except padding rect) non-interactive so padding rect receives all events
+
+      const pointerResets = new Map<Element, string>();
       Array.from(svgGroup.children).forEach(child => {
         if (child !== paddingRect) {
-          (child as SVGElement).style.pointerEvents = 'none';
+          const element = child as SVGElement;
+          pointerResets.set(element, element.style.pointerEvents);
+          element.style.pointerEvents = 'none';
         }
       });
 
@@ -78,7 +77,6 @@ export default function InteractiveSVG({ onSelect }: InteractiveSVGProps) {
       };
 
       const handleClick = () => {
-        // Brief pulse effect on click
         svgGroup.style.opacity = '0.6';
         setTimeout(() => {
           svgGroup.style.opacity = '1';
@@ -86,18 +84,35 @@ export default function InteractiveSVG({ onSelect }: InteractiveSVGProps) {
         onSelect(key);
       };
 
-      // Add event listeners only to padding rect (since children are pointer-events: none)
       paddingRect.addEventListener('mouseenter', handleMouseEnter);
       paddingRect.addEventListener('mouseleave', handleMouseLeave);
       paddingRect.addEventListener('click', handleClick);
 
-      // Cleanup
-      return () => {
+      cleanups.push(() => {
         paddingRect.removeEventListener('mouseenter', handleMouseEnter);
         paddingRect.removeEventListener('mouseleave', handleMouseLeave);
         paddingRect.removeEventListener('click', handleClick);
-      };
+
+        pointerResets.forEach((value, element) => {
+          element.style.pointerEvents = value;
+        });
+
+        svgGroup.style.cursor = previousCursor;
+        svgGroup.style.transition = previousTransition;
+        svgGroup.style.transformOrigin = previousTransformOrigin;
+        svgGroup.style.opacity = '';
+        svgGroup.style.transform = '';
+        svgGroup.style.filter = '';
+
+        if (paddingRect.parentNode === svgGroup) {
+          svgGroup.removeChild(paddingRect);
+        }
+      });
     });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
   }, [svgContent, onSelect]);
 
   return (
