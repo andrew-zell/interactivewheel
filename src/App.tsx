@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Wheel from "./components/Wheel";
 import Slide from "./components/Slide";
@@ -50,7 +50,7 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const handleSelect = (key: ItemKey) => {
+  const handleSelect = useCallback((key: ItemKey) => {
     // Check if this is AI Companion (no content page)
     if (key === 'aicompanion') {
       // Toggle AI boost effect on/off
@@ -59,7 +59,7 @@ export default function App() {
       // Only open slide if content exists
       setActive(key);
     }
-  };
+  }, [setActive, setAiBoost]);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-base">

@@ -15,7 +15,11 @@ export default function Slide({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 18, opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="relative w-full max-w-6xl rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
+        className={[
+          "relative w-full max-w-6xl rounded-2xl",
+          "bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl",
+          "overflow-hidden",
+        ].join(" ")}
       >
         {/* Close Button */}
         <button
